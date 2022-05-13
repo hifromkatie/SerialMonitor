@@ -3,6 +3,31 @@ import machine
 from machine import Pin, UART
 import time
 
+def new_serial(newLine,sDir):
+    if len(screenList)>19:
+        screenList.pop(0)
+    newItem = []
+    newItem.append(newLine)
+    newItem.append(sDir)
+    screenList.append(newItem)
+    write_screen()
+
+        
+
+def write_screen():
+    uartScreen.write(bytes([0xFF, 0xCD])) #clear screen
+    uartScreen.write(bytes([0xFF, 0xCC, 0x00, 0x00, 0x00, 0x00]))#set origin ot 0,0UARTuartScreen.write(bytes([0xFF, 0xE7, 0xFF, 0xFF]))#forground/text colour white
+    uartScreen.write(bytes([0xFF, 0xE6, 0x00, 0x00]))#background colour black
+    uartScreen.write(bytes([0xFF, 0xE5, 0x00, 0x02])) #set font 3
+    for i in range(len(screenList)):
+        if screenList[i][1] == 0:
+            uartScreen.write(bytes([0xFF, 0xDD, 0x00, 0x00])) #not italic
+        else:
+            uartScreen.write(bytes([0xFF, 0xDD, 0x00, 0x01])) #italic
+        uartScreen.write(bytes([0x00, 0x18, ord(screenList[i][0]), 0x0a, 0x00])) #d 
+    
+
+
 screenList = []
 
 intLED = Pin(25, Pin.OUT)
@@ -27,33 +52,24 @@ uartScreen.write(bytes([0xFF, 0xCC, 0x00, 0x00, 0x00, 0x00]))#set origin ot 0,0
 uartScreen.write(bytes([0xFF, 0xE7, 0xFF, 0xFF]))#forground/text colour white
 uartScreen.write(bytes([0xFF, 0xE6, 0x00, 0x00]))#background colour black
 uartScreen.write(bytes([0xFF, 0xE5, 0x00, 0x02])) #set font 3
-uartScreen.write(bytes([0xFF, 0xDD, 0x00, 0x00])) #not italic
-
-#uartScreen.write(bytes([0x00, 0x18, 0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x0a, 0x00]))
 
 while True:
 
     intLED.value(0)
     if buttonA.value()==0:
         uartComms.write(bytes([0x61, 0x0a]))
-        uartScreen.write(bytes([0xFF, 0xDD, 0x00, 0x01])) #italic
-        uartScreen.write(bytes([0x00, 0x18, 0x61, 0x0a, 0x00])) #a
+        new_serial("a",1)
         time.sleep(0.5)
     if buttonB.value()==0:
-        uartComms.write(bytes([0x62, 0x0a]))    
-        uartScreen.write(bytes([0xFF, 0xDD, 0x00, 0x01])) #italic
-        uartScreen.write(bytes([0x00, 0x18, 0x62, 0x0a, 0x00])) #b
+        uartComms.write(bytes([0x62, 0x0a]))
+        new_serial("b",1)  
         time.sleep(0.5)
     if buttonC.value()==0:
-        uartComms.write(bytes([0x63, 0x0a]))    
-        uartScreen.write(bytes([0xFF, 0xDD, 0x00, 0x01])) #italic
-        uartScreen.write(bytes([0x00, 0x18, 0x63, 0x0a, 0x00])) #c        
+        uartComms.write(bytes([0x63, 0x0a]))
+        new_serial("c",1)       
         time.sleep(0.5)
     if buttonD.value()==0:
-        uartComms.write(bytes([0x64, 0x0a]))    
-        uartScreen.write(bytes([0xFF, 0xDD, 0x00, 0x01])) #italic
-        uartScreen.write(bytes([0x00, 0x18, 0x64, 0x0a, 0x00])) #d        
+        uartComms.write(bytes([0x64, 0x0a]))
+        new_serial("d",1)      
         time.sleep(0.5)
-
-def write_screen (line, dir):
-    
+    #write_screen()
