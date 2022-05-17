@@ -61,18 +61,12 @@ while True:
     tempbuffer = uartComms.read(1)
 
     if tempbuffer != None:
-        #print(tempbuffer)
         if tempbuffer == b"\n":
             new_serial(buffer+'\n',0)
             buffer = ""
         else:
             buffer += tempbuffer.decode("ascii")
 
-#     tempbuffer = uartComms.readline()
-# 
-#     if tempbuffer != None:
-#         print(tempbuffer)
-#         new_serial(tempbuffer,0)
     
     if buttonA.value()==0:
         uartComms.write(bytes([0x61, 0x0a]))
